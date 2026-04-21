@@ -473,10 +473,16 @@ function App() {
 
   // 构建全部视图的分块数据：按分类分组，每个分类内排序
   const allItems = () => {
+    // 如果有搜索词，直接返回所有匹配的工具（不分块）
+    if (searchQuery.trim()) {
+      const matched = filterTools(tools);
+      return sortToolsForCategory(matched);
+    }
+    
+    // 无搜索时按分类分块
     const items = [];
     categories.slice(1).forEach((cat) => {
-      let catTools = tools.filter(t => t.category === cat);
-      catTools = filterTools(catTools);
+      const catTools = tools.filter(t => t.category === cat);
       if (catTools.length === 0) return;
       
       const sorted = sortToolsForCategory(catTools);
