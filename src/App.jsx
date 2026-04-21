@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const tools = [
   // 🤖 大语言模型
@@ -321,7 +321,7 @@ const tools = [
   {
     name: "SkillHub",
     desc: "OpenClaw 技能市场，搜索安装 AI 能力扩展包",
-    url: "https://skillhub.ai",
+    url: "https://www.skillhub.cn/",
     category: "OpenClaw 专区",
     color: "from-green-500 to-teal-500",
     icon: "🧩",
@@ -398,13 +398,14 @@ function sortToolsForCategory(ts) {
   return items;
 }
 
-function ToolCard({ tool }) {
+function ToolCard({ tool, index }) {
   return (
     <a
       href={tool.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="group flex items-start gap-4 bg-white/5 border border-white/10 rounded-2xl p-5 hover:border-white/20 transition-all duration-300 card-glow"
+      className="group flex items-start gap-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-5 hover:border-white/20 hover:bg-white/10 transition-all duration-300 card-animate"
+      style={{ animationDelay: `${index * 30}ms` }}
     >
       <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${tool.color} flex items-center justify-center text-xl shrink-0 group-hover:scale-110 transition-transform duration-300`}>
         {tool.icon}
@@ -436,15 +437,48 @@ function Divider() {
 
 function App() {
   const [activeCategory, setActiveCategory] = useState("全部");
+  const [searchQuery, setSearchQuery] = useState("");
+  const searchInputRef = useRef(null);
+
+  // 按 / 聚焦搜索框
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "/" && document.activeElement !== searchInputRef.current) {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+      // ESC 清空搜索
+      if (e.key === "Escape") {
+        setSearchQuery("");
+        searchInputRef.current?.blur();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   const getCategoryCount = (cat) =>
     cat === "全部" ? tools.length : tools.filter(t => t.category === cat).length;
+
+  // 搜索过滤
+  const filterTools = (ts) => {
+    if (!searchQuery.trim()) return ts;
+    const q = searchQuery.toLowerCase();
+    return ts.filter(t => 
+      t.name.toLowerCase().includes(q) || 
+      t.desc.toLowerCase().includes(q) ||
+      t.category.toLowerCase().includes(q)
+    );
+  };
 
   // 构建全部视图的分块数据：按分类分组，每个分类内排序
   const allItems = () => {
     const items = [];
     categories.slice(1).forEach((cat) => {
-      const catTools = tools.filter(t => t.category === cat);
+      let catTools = tools.filter(t => t.category === cat);
+      catTools = filterTools(catTools);
+      if (catTools.length === 0) return;
+      
       const sorted = sortToolsForCategory(catTools);
       if (items.length > 0) items.push({ type: "gap" });
       items.push({ type: "sectionHeader", label: cat, emoji: categoryEmoji[cat], count: catTools.length });
@@ -453,12 +487,29 @@ function App() {
     return items;
   };
 
+  // 单分类视图
+  const categoryItems = () => {
+    const catTools = filterTools(tools.filter(t => t.category === activeCategory));
+    return sortToolsForCategory(catTools);
+  };
+
+  // 统计
+  const totalTools = tools.length;
+  const totalCategories = categories.length - 1;
+  const filteredCount = filterTools(tools).length;
+
   return (
-    <div className="min-h-screen px-4 py-10">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen px-4 py-10 relative">
+      {/* 背景装饰 */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl" />
+      </div>
+
+      <div className="max-w-4xl mx-auto relative z-10">
 
         {/* Header */}
-        <div className="text-center mb-10">
+        <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm mb-5">
             <span>✨</span>
             <span>AI 工具导航 · 内部版</span>
@@ -466,11 +517,38 @@ function App() {
           <h1 className="text-4xl font-bold mb-3">
             <span className="gradient-text">AI 工具集</span>
           </h1>
-          <p className="text-gray-400 text-base">让团队每个人都能轻松使用 AI</p>
+          <p className="text-gray-400 text-base mb-4">让团队每个人都能轻松使用 AI</p>
+          
+          {/* 统计栏 */}
+          <div className="flex items-center justify-center gap-4 text-sm text-gray-500">
+            <span>共收录 <span className="text-white font-medium">{totalTools}</span> 款工具</span>
+            <span className="text-gray-700">·</span>
+            <span><span className="text-white font-medium">{totalCategories}</span> 个分类</span>
+          </div>
+        </div>
+
+        {/* 搜索框 */}
+        <div className="relative mb-6">
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          <input
+            ref={searchInputRef}
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="搜索工具名称、描述、分类... (按 / 快速聚焦)"
+            className="w-full pl-12 pr-20 py-3.5 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl text-white placeholder-gray-500 focus:outline-none focus:border-blue-500/50 focus:bg-white/10 transition-all"
+          />
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-1">
+            <kbd className="px-2 py-1 text-xs text-gray-500 bg-white/5 rounded border border-white/10">/</kbd>
+          </div>
         </div>
 
         {/* 快捷访问 */}
-        <div className="bg-gradient-to-r from-blue-600/10 to-purple-600/10 border border-blue-500/20 rounded-2xl p-5 mb-8">
+        <div className="bg-gradient-to-r from-blue-600/10 to-purple-600/10 backdrop-blur-sm border border-blue-500/20 rounded-2xl p-5 mb-8">
           <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">快捷访问</h2>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {quickTools.map((t) => (
@@ -490,22 +568,34 @@ function App() {
 
         {/* 分类切换 */}
         <div className="flex items-center gap-2 mb-6 flex-wrap">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                activeCategory === cat
-                  ? "bg-blue-500/20 border border-blue-500/40 text-blue-300"
-                  : "bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10"
-              }`}
-            >
-              <span>{categoryEmoji[cat]}</span>
-              <span>{cat}</span>
-              <span className="text-xs opacity-60">({getCategoryCount(cat)})</span>
-            </button>
-          ))}
+          {categories.map((cat) => {
+            const count = cat === "全部" 
+              ? (searchQuery ? filteredCount : totalTools)
+              : filterTools(tools.filter(t => t.category === cat)).length;
+            return (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                  activeCategory === cat
+                    ? "bg-blue-500/20 border border-blue-500/40 text-blue-300"
+                    : "bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10"
+                }`}
+              >
+                <span>{categoryEmoji[cat]}</span>
+                <span>{cat}</span>
+                <span className="text-xs opacity-60">({count})</span>
+              </button>
+            );
+          })}
         </div>
+
+        {/* 搜索结果提示 */}
+        {searchQuery && (
+          <div className="mb-4 text-sm text-gray-400">
+            找到 <span className="text-white font-medium">{filteredCount}</span> 个匹配「<span className="text-blue-400">{searchQuery}</span>」的工具
+          </div>
+        )}
 
         {/* 工具列表 */}
         <div className="grid gap-3 sm:grid-cols-2 mb-12">
@@ -529,16 +619,23 @@ function App() {
                   return <div key={`divider-${i}`} className="col-span-2"><Divider /></div>;
                 }
                 return (
-                  <ToolCard key={`${item.tool.name}-${item.tool.category}`} tool={item.tool} />
+                  <ToolCard key={`${item.tool.name}-${item.tool.category}`} tool={item.tool} index={i} />
                 );
               })
-            : sortToolsForCategory(
-                tools.filter(t => t.category === activeCategory)
-              ).map((item, i) => {
+            : categoryItems().map((item, i) => {
                 if (item.type === "divider") return <div key={`d-${i}`} className="col-span-2"><Divider /></div>;
-                return <ToolCard key={`${item.tool.name}-${item.tool.category}`} tool={item.tool} />;
+                return <ToolCard key={`${item.tool.name}-${item.tool.category}`} tool={item.tool} index={i} />;
               })
           }
+
+          {/* 无结果提示 */}
+          {(activeCategory === "全部" ? allItems() : categoryItems()).length === 0 && (
+            <div className="col-span-2 text-center py-12 text-gray-500">
+              <div className="text-4xl mb-3">🔍</div>
+              <p>没有找到匹配的工具</p>
+              <p className="text-sm mt-1">试试其他关键词？</p>
+            </div>
+          )}
         </div>
 
         {/* Footer */}
