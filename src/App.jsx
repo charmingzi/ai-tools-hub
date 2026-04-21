@@ -369,7 +369,7 @@ const tools = [
 const quickTools = [
   tools.find(t => t.name === "即梦" && t.category === "AI 绘画"),
   tools.find(t => t.name === "DeepSeek"),
-  tools.find(t => t.name === "Kimi"),
+  tools.find(t => t.name === "IMA 知识库"),
   tools.find(t => t.name === "豆包"),
 ];
 
