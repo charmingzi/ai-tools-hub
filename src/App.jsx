@@ -440,14 +440,20 @@ function App() {
   const [searchQuery, setSearchQuery] = useState("");
   const searchInputRef = useRef(null);
 
-  // 按 / 聚焦搜索框
+  // 搜索时自动切换到全部分类
+  useEffect(() => {
+    if (searchQuery.trim()) {
+      setActiveCategory("全部");
+    }
+  }, [searchQuery]);
+
+  // 按 / 聚焦搜索框，ESC 清空
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === "/" && document.activeElement !== searchInputRef.current) {
         e.preventDefault();
         searchInputRef.current?.focus();
       }
-      // ESC 清空搜索
       if (e.key === "Escape") {
         setSearchQuery("");
         searchInputRef.current?.blur();
@@ -605,33 +611,38 @@ function App() {
 
         {/* 工具列表 */}
         <div className="grid gap-3 sm:grid-cols-2 mb-12">
-          {activeCategory === "全部"
+          {searchQuery.trim()
             ? allItems().map((item, i) => {
-                if (item.type === "gap") {
-                  return <div key={`gap-${i}`} className="col-span-2 h-2" />;
-                }
-                if (item.type === "sectionHeader") {
-                  return (
-                    <div key={`header-${item.label}`} className="col-span-2">
-                      <div className="flex items-center gap-2 mb-2 mt-2">
-                        <span className="text-base">{item.emoji}</span>
-                        <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">{item.label}</h3>
-                        <span className="text-xs text-gray-600">({item.count})</span>
-                      </div>
-                    </div>
-                  );
-                }
-                if (item.type === "divider") {
-                  return <div key={`divider-${i}`} className="col-span-2"><Divider /></div>;
-                }
-                return (
-                  <ToolCard key={`${item.tool.name}-${item.tool.category}`} tool={item.tool} index={i} />
-                );
-              })
-            : categoryItems().map((item, i) => {
                 if (item.type === "divider") return <div key={`d-${i}`} className="col-span-2"><Divider /></div>;
                 return <ToolCard key={`${item.tool.name}-${item.tool.category}`} tool={item.tool} index={i} />;
               })
+            : activeCategory === "全部"
+              ? allItems().map((item, i) => {
+                  if (item.type === "gap") {
+                    return <div key={`gap-${i}`} className="col-span-2 h-2" />;
+                  }
+                  if (item.type === "sectionHeader") {
+                    return (
+                      <div key={`header-${item.label}`} className="col-span-2">
+                        <div className="flex items-center gap-2 mb-2 mt-2">
+                          <span className="text-base">{item.emoji}</span>
+                          <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">{item.label}</h3>
+                          <span className="text-xs text-gray-600">({item.count})</span>
+                        </div>
+                      </div>
+                    );
+                  }
+                  if (item.type === "divider") {
+                    return <div key={`divider-${i}`} className="col-span-2"><Divider /></div>;
+                  }
+                  return (
+                    <ToolCard key={`${item.tool.name}-${item.tool.category}`} tool={item.tool} index={i} />
+                  );
+                })
+              : categoryItems().map((item, i) => {
+                  if (item.type === "divider") return <div key={`d-${i}`} className="col-span-2"><Divider /></div>;
+                  return <ToolCard key={`${item.tool.name}-${item.tool.category}`} tool={item.tool} index={i} />;
+                })
           }
 
           {/* 无结果提示 */}
