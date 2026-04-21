@@ -41,7 +41,7 @@ const tools = [
   {
     name: "通义千问",
     desc: "阿里大模型，擅长中文理解与逻辑推理",
-    url: "https://tongyi.aliyun.com",
+    url: "https://www.qianwen.com/?source=tongyigw",
     category: "大语言模型",
     color: "from-yellow-500 to-orange-500",
     icon: "💎",
