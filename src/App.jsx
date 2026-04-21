@@ -30,12 +30,21 @@ const tools = [
     isForeign: false,
   },
   {
+    name: "元宝",
+    desc: "腾讯混元大模型，深度集成微信生态",
+    url: "https://yuanbao.tencent.com",
+    category: "大语言模型",
+    color: "from-yellow-500 to-orange-500",
+    icon: "🪙",
+    isForeign: false,
+  },
+  {
     name: "文心一言",
     desc: "百度大模型，支持对话、创作、知识问答",
     url: "https://yiyan.baidu.com",
     category: "大语言模型",
-    color: "from-red-500 to-orange-500",
-    icon: "🧠",
+    color: "from-blue-500 to-cyan-500",
+    icon: "📝",
     isForeign: false,
   },
   {
@@ -104,6 +113,15 @@ const tools = [
     isForeign: false,
   },
   {
+    name: "海螺 AI",
+    desc: "MiniMax AI 绘画，高质量图片生成",
+    url: "https://hailuoai.com",
+    category: "AI 绘画",
+    color: "from-cyan-500 to-blue-500",
+    icon: "🐚",
+    isForeign: false,
+  },
+  {
     name: "Adobe Firefly",
     desc: "Adobe AI 绘画，深度集成 Photoshop 工作流",
     url: "https://firefly.adobe.com",
@@ -160,6 +178,15 @@ const tools = [
     isForeign: false,
   },
   {
+    name: "海螺 AI",
+    desc: "MiniMax AI 视频生成，文生视频能力强",
+    url: "https://hailuoai.com",
+    category: "AI 视频",
+    color: "from-cyan-500 to-blue-500",
+    icon: "🐚",
+    isForeign: false,
+  },
+  {
     name: "Vidu",
     desc: "生数科技 AI 视频生成，支持风格化视频创作",
     url: "https://www.vidu.cn",
@@ -185,6 +212,84 @@ const tools = [
     color: "from-pink-500 to-rose-500",
     icon: "🎞️",
     isForeign: true,
+  },
+
+  // 🎵 AI 音乐
+  {
+    name: "Suno",
+    desc: "AI 音乐生成，输入文字即可生成歌曲 🪜",
+    url: "https://suno.com",
+    category: "AI 音乐",
+    color: "from-purple-500 to-pink-500",
+    icon: "🎵",
+    isForeign: true,
+  },
+
+  // 🎙️ AI 语音
+  {
+    name: "MiniMax",
+    desc: "MiniMax 语音合成，支持多音色语音生成",
+    url: "https://www.minimaxi.com",
+    category: "AI 语音",
+    color: "from-indigo-500 to-purple-500",
+    icon: "🎙️",
+    isForeign: false,
+  },
+
+  // 🖼️ 设计素材
+  {
+    name: "千库网",
+    desc: "免扣素材库，海量 PNG 素材免费下载",
+    url: "https://588ku.com",
+    category: "设计素材",
+    color: "from-orange-500 to-red-500",
+    icon: "📦",
+    isForeign: false,
+  },
+  {
+    name: "包图网",
+    desc: "原创商用设计素材，PPT、视频、配乐一应俱全",
+    url: "https://ibaotu.com",
+    category: "设计素材",
+    color: "from-yellow-500 to-orange-500",
+    icon: "🎁",
+    isForeign: false,
+  },
+  {
+    name: "千图网",
+    desc: "专注免费设计素材下载的网站",
+    url: "https://www.58pic.com",
+    category: "设计素材",
+    color: "from-blue-500 to-cyan-500",
+    icon: "🎨",
+    isForeign: false,
+  },
+  {
+    name: "图怪兽",
+    desc: "在线图片编辑器，一键生成海报、封面",
+    url: "https://818ps.com",
+    category: "设计素材",
+    color: "from-pink-500 to-rose-500",
+    icon: "🦄",
+    isForeign: false,
+  },
+  {
+    name: "创客贴",
+    desc: "在线设计平台，海量模板一键套用",
+    url: "https://www.chuangkit.com",
+    category: "设计素材",
+    color: "from-green-500 to-teal-500",
+    icon: "✨",
+    isForeign: false,
+  },
+  {
+    name: "花瓣网",
+    desc: "设计师灵感采集平台，收集设计灵感",
+    url: "https://huaban.com",
+    category: "设计素材",
+    color: "from-orange-500 to-amber-500",
+    icon: "🌸",
+    isForeign: false,
   },
 
   // 💼 AI 办公
@@ -270,6 +375,24 @@ const tools = [
     color: "from-orange-500 to-red-500",
     icon: "🔧",
     isForeign: false,
+  },
+  {
+    name: "Claude AI",
+    desc: "Anthropic 大模型，擅长长文本与代码 🪜",
+    url: "https://claude.ai",
+    category: "开发工具",
+    color: "from-orange-400 to-amber-500",
+    icon: "🤖",
+    isForeign: true,
+  },
+  {
+    name: "Vercel",
+    desc: "前端部署平台，支持一键部署与边缘函数 🪜",
+    url: "https://vercel.com",
+    category: "开发工具",
+    color: "from-gray-600 to-gray-800",
+    icon: "▲",
+    isForeign: true,
   },
   {
     name: "Dify",
@@ -373,13 +496,16 @@ const quickTools = [
   tools.find(t => t.name === "豆包"),
 ];
 
-const categories = ["全部", "大语言模型", "AI 绘画", "AI 视频", "AI 办公", "开发工具", "OpenClaw 专区"];
+const categories = ["全部", "大语言模型", "AI 绘画", "AI 视频", "AI 音乐", "AI 语音", "设计素材", "AI 办公", "开发工具", "OpenClaw 专区"];
 
 const categoryEmoji = {
   "全部":          "🚀",
   "大语言模型":    "🤖",
   "AI 绘画":      "🎨",
   "AI 视频":      "🎬",
+  "AI 音乐":      "🎵",
+  "AI 语音":      "🎙️",
+  "设计素材":     "🖼️",
   "AI 办公":      "💼",
   "开发工具":     "🛠️",
   "OpenClaw 专区": "🔱",
@@ -511,7 +637,7 @@ function App() {
   const filteredCount = filterTools(tools).length;
 
   return (
-    <div className="min-h-screen px-4 py-10 relative">
+    <div className="min-h-screen px-4 py-12 relative">
       {/* 背景装饰 */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
@@ -521,7 +647,7 @@ function App() {
       <div className="max-w-4xl mx-auto relative z-10">
 
         {/* Header */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-8 pt-6">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm mb-5">
             <span>✨</span>
             <span>AI 工具导航 · 内部版</span>
